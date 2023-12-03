@@ -1,0 +1,228 @@
+﻿<Window x:Class="SeaBattleGame.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SeaBattleGame"
+        mc:Ignorable="d"
+        Title="Sea Battle" Height="650" Width="1000">
+    <Grid>
+        <Grid x:Name="StartPanel"
+              Visibility="Collapsed"
+              Height="300">
+            <TextBlock Text="Морской бой"
+                       FontSize="50" HorizontalAlignment="Center"
+                       VerticalAlignment="Top"/>
+            <TextBlock Text="⛵ ⚔ 🚢"
+                       FontSize="40"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+            <Button Height="45" Width="250"
+                    VerticalAlignment="Bottom"
+                    Click="StartGameClick"
+                    Content="Начать битву"
+                    FontSize="24" Background="LightBlue">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+        <Grid x:Name="ChooseModePanel"
+              Visibility="Collapsed">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Выберите режим игры"
+                           FontSize="26" 
+                           HorizontalAlignment="Center"/>
+                <Button Click="ChooseGameModeCLick"
+                        Content="Игрок:Компьютер"
+                        Height="70" Width="170"
+                        Margin="15" x:Name="PC">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button Click="ChooseGameModeCLick"
+                        Content="Игрок1:Игрок2"
+                        Height="70" Width="170"
+                        x:Name="PP">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="PcChooseCreationModePanel"
+              Visibility="Collapsed">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Как создать поле ?"
+                           FontSize="26" 
+                           HorizontalAlignment="Center"/>
+                <Button Click="PcChooseCreationMode"
+                        Content="Сгенерировать случайно"
+                        Height="70" Width="170"
+                        Margin="15" x:Name="Random">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button Click="PcChooseCreationMode"
+                        Content="Создать вруную"
+                        Height="70" Width="170"
+                        x:Name="Handmade">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>   
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="InformationPanel"
+              Width="805" Height="100"
+              VerticalAlignment="Top"
+              Margin="5" Visibility="Collapsed">
+            <TextBlock Text="Кораблей игрока №1 осталось: "
+                       FontSize="16"/>
+            <Grid Height="20" Width="330"
+                  VerticalAlignment="Top">
+                <TextBlock x:Name="Player1Cnt"
+                           Height="30" Width="30"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Left"
+                           FontSize="16"/>
+            </Grid>
+            <Grid Height="100" Width="170">
+                <TextBlock Text="Ходит"
+                           FontSize="16" Margin="2"
+                           HorizontalAlignment="Left"/>
+            </Grid>
+            <Grid Height="100" Width="80">
+                <TextBlock x:Name="PlayerStep"
+                           FontSize="16" Margin="2"/>
+            </Grid>
+            <Grid Height="100" Width="700">
+                <TextBlock Text="Кораблей игрока №2 осталось: "
+                           HorizontalAlignment="Right"
+                           FontSize="16" Margin="2"/>
+            </Grid>
+            <Grid Height="100" Width="760" Margin="2">
+                <TextBlock x:Name="Player2Cnt"
+                           Height="30" Width="30"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Right"
+                           FontSize="16"/>
+            </Grid>
+        </Grid>
+        <Grid x:Name="Player1GroundGrid"
+              Visibility="Collapsed"
+              HorizontalAlignment="Left"
+              Margin="80">
+            <Border BorderBrush="Gray"
+                    BorderThickness="0.7"
+                    Height="401" Width="401">
+                <ItemsControl x:Name="Player1Ground">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{Binding BorderColour}"
+                                                BorderThickness="0.7"
+                                                Height="40" Width="40"
+                                                MouseDown="Player1MouseDown">
+                                            <TextBlock Text="{Binding Content}"
+                                                       Height="39" Width="39"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontWeight="Black"
+                                                       FontSize="20" Background="{Binding Colour}"
+                                                       TextAlignment="Center"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </Grid>
+        <Grid x:Name="Player2GroundGrid"
+              Visibility="Collapsed"
+              HorizontalAlignment="Right"
+              Margin="80">
+            <Border BorderBrush="Gray"
+                    BorderThickness="0.7"
+                    Height="401" Width="401">
+                <ItemsControl x:Name="Player2Ground">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{Binding BorderColour}"
+                                                BorderThickness="0.7"
+                                                Height="40" Width="40"
+                                                MouseDown="Player2MouseDown">
+                                            <TextBlock Text="{Binding Content}"
+                                                       Height="39" Width="39"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       TextAlignment="Center"
+                                                       FontWeight="Black"
+                                                       FontSize="20" Background="{Binding Colour}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </Grid>
+        <Grid x:Name="WinnerPanel"
+              Height="350" Width="600"
+              Visibility="Collapsed">
+            <Border BorderBrush="Gray"
+                    BorderThickness="1"
+                    CornerRadius="25"
+                    Background="LightBlue">
+                <Grid Height="160">
+                    <TextBlock x:Name="WinnerText"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               FontSize="28"/>
+                    <Button Height="35" Width="150"
+                            Background="LightGreen"
+                            Content="Начать заново"
+                            VerticalAlignment="Bottom"
+                            Margin="30" FontSize="18"
+                            Click="RestartGameClick">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="10"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
