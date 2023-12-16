@@ -86,6 +86,7 @@ namespace SeaBattleGame
                     if (Player1Map.Map[point[0]][point[1]].Content != "X")
                     {
                         Player1Map.Map[point[0]][point[1]].Content = "X";
+                        CheckPoint(point[0], point[1], 0);
                         Points1Cnt -= 1;
                         if (Points1Cnt == 0)
                         {
@@ -120,7 +121,89 @@ namespace SeaBattleGame
             InformationPanel.Visibility = Visibility.Collapsed;
             WinnerText.Text = $"Победил {Winner}";
             WinnerPanel.Visibility = Visibility.Visible;
-        }    
+        }  
+        
+        private void CheckPoint(int X, int Y, int UserId)
+        {
+            Status IsKilled = MapManager.CheckBoats(new int[2] { X, Y }, UserId);
+            if (IsKilled.IsKilled == true)
+            {
+                int[][] Ship = IsKilled.Ship;
+                SeaGround Ground;
+                int[][] Map;
+                if (UserId == 0)
+                {
+                    Ground = Player1Map;
+                    Player1BoatsCnt -= 1;
+                    Player1Cnt.Text = (Player1BoatsCnt).ToString();
+                    Map = Map1;
+                } 
+                else
+                {
+                    Ground = Player2Map;
+                    Player2BoatsCnt -= 1;
+                    Player2Cnt.Text = (Player2BoatsCnt).ToString();
+                    Map = Map2;
+                }
+                for (int i = 0; i < Ship.Length - 1; i++)
+                {
+                    Ground.Map[Ship[i][0] - 1][Ship[i][1] - 1].Colour = "Red";
+                    Ground.Map[Ship[i][0] - 1][Ship[i][1] - 1].BorderColour = "Red";
+                    if (Map[Ship[i][0] - 1][Ship[i][1]] == 0)
+                    {
+                        Ground.Map[Ship[i][0] - 2][Ship[i][1] - 1].Content = ".";
+                        Ground.Map[Ship[i][0] - 2][Ship[i][1] - 1].Colour = "LightGreen";
+                    }
+                    if (Map[Ship[i][0] + 1][Ship[i][1]] == 0)
+                    {
+                        Ground.Map[Ship[i][0]][Ship[i][1] - 1].Content = ".";
+                        Ground.Map[Ship[i][0]][Ship[i][1] - 1].Colour = "LightGreen";
+                    }
+                    if (Map[Ship[i][0]][Ship[i][1] - 1] == 0)
+                    {
+                        Ground.Map[Ship[i][0] - 1][Ship[i][1] - 2].Content = ".";
+                        Ground.Map[Ship[i][0] - 1][Ship[i][1] - 2].Colour = "LightGreen";
+                    }
+                    if (Map[Ship[i][0]][Ship[i][1] + 1] == 0)
+                    {
+                        Ground.Map[Ship[i][0] - 1][Ship[i][1]].Content = ".";
+                        Ground.Map[Ship[i][0] - 1][Ship[i][1]].Colour = "LightGreen";
+                    }
+                    if (Map[Ship[i][0] - 1][Ship[i][1] - 1] == 0)
+                    {
+                        Ground.Map[Ship[i][0] - 2][Ship[i][1] - 2].Content = ".";
+                        Ground.Map[Ship[i][0] - 2][Ship[i][1] - 2].Colour = "LightGreen";
+                    }
+                    if (Map[Ship[i][0] - 1][Ship[i][1] + 1] == 0)
+                    {
+                        Ground.Map[Ship[i][0] - 2][Ship[i][1]].Content = ".";
+                        Ground.Map[Ship[i][0] - 2][Ship[i][1]].Colour = "LightGreen";
+                    }
+                    if (Map[Ship[i][0] + 1][Ship[i][1] - 1] == 0)
+                    {
+                        Ground.Map[Ship[i][0]][Ship[i][1] - 2].Content = ".";
+                        Ground.Map[Ship[i][0]][Ship[i][1] - 2].Colour = "LightGreen";
+                    }
+                    if (Map[Ship[i][0] + 1][Ship[i][1] + 1] == 0)
+                    {
+                        Ground.Map[Ship[i][0]][Ship[i][1]].Content = ".";
+                        Ground.Map[Ship[i][0]][Ship[i][1]].Colour = "LightGreen";
+                    }
+                }
+                if (UserId == 0)
+                {
+                    Player1Map = Ground;
+                }
+                else
+                {
+                    Player2Map = Ground;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
 
         public class SeaGround
         {
@@ -135,7 +218,7 @@ namespace SeaBattleGame
         
         public class Cell : INotifyPropertyChanged
         {
-            public event PropertyChangedEventHandler? PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
             public int X { get; set; }
             public int Y { get; set; }
             private string State = "";
@@ -187,6 +270,10 @@ namespace SeaBattleGame
                 PrepareGameBot();
                 Mode = "PC";
             }
+            else
+            {
+                return;
+            }
         }
 
         private void PcChooseCreationMode(object sender, RoutedEventArgs e)
@@ -198,6 +285,11 @@ namespace SeaBattleGame
                 Map1 = MapManager.GenerateMap(0);
                 Player1Map.Map = GroundManager.GetGroundByMap(Map1);
                 StartGame();
+            }
+            else if (button.Name.ToString() == "Handmade")
+            {
+                Map1 = MapManager.GetEmptyMap();
+                HandMadeCreationPanel.Visibility = Visibility.Visible;
             }
         }
 
@@ -218,6 +310,7 @@ namespace SeaBattleGame
                 {
                     Player2Map.Map[cell.X][cell.Y].Content = "X";
                     Points2Cnt -= 1;
+                    CheckPoint(cell.X, cell.Y, 1);
                     if (Points2Cnt == 0)
                     {
                         FinishGame("Игрок №1");

@@ -15,11 +15,14 @@ namespace SeaBattleGame.Utils
             int MaxLengthBoat = 4;
             int[][] PointsClone = GetPoints();
             string VorH = "V";
+            int[][][] Boats = new int[10][][];
+            int ShipIndex = 0;
             for (int i = 1; i <= 4; i++)
             {
                 for (int j = 0; j < i; j++)
                 {
                     int maxL = MaxLengthBoat;
+                    int[][] Ship = new int[MaxLengthBoat + 1][];
                     while (true)
                     {
                         if (maxL == 0)
@@ -37,31 +40,48 @@ namespace SeaBattleGame.Utils
                         {
                             continue;
                         }
-                        if (MaxLengthBoat == 2)
+                        if (MaxLengthBoat == 1)
+                        {
+                            Ship[0] = point;
+                            Ship[1] = new int[1] { 1 };
+                        }
+                        else if (MaxLengthBoat == 2)
                         {
                             if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, point) && VorH == "V")
                             {
                                 Map[point[0] - 1][point[1]] = 1;
-                                maxL -= 1;
                                 VorH = "H";
+                                Ship[0] = point;
+                                Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                Ship[2] = new int[1] { 2 };
+                                break;
                             }
                             else if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, point) && VorH == "H")
                             {
                                 Map[point[0]][point[1] - 1] = 1;
-                                maxL -= 1;
                                 VorH = "V";
+                                Ship[0] = point;
+                                Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                Ship[2] = new int[1] { 2 };
+                                break;
                             }
                             else if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, point) && VorH == "V")
                             {
                                 Map[point[0] + 1][point[1]] = 1;
-                                maxL -= 1;
                                 VorH = "H";
+                                Ship[0] = point;
+                                Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                Ship[2] = new int[1] { 2 };
+                                break;
                             }
                             else if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, point) && VorH == "H")
                             {
                                 Map[point[0]][point[1] + 1] = 1;
-                                maxL -= 1;
                                 VorH = "V";
+                                Ship[0] = point;
+                                Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                Ship[2] = new int[1] { 2 };
+                                break;
                             }
                             else
                             {
@@ -79,16 +99,22 @@ namespace SeaBattleGame.Utils
                                 if (ValidatePoint(Map, new int[2] { point[0] - 2, point[1] }, new int[2] { point[0] - 1, point[1] }))
                                 {
                                     Map[point[0] - 2][point[1]] = 1;
-                                    maxL -= 1;
                                     VorH = "H";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                    Ship[2] = new int[2] { point[0] - 2, point[1] };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, new int[2] { point[0] - 1, point[1] }))
                                 {
                                     Map[point[0] + 1][point[1]] = 1;
-                                    maxL -= 1;
                                     VorH = "H";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                    Ship[2] = new int[2] { point[0] + 1, point[1] };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else
                                 {
@@ -103,16 +129,22 @@ namespace SeaBattleGame.Utils
                                 if (ValidatePoint(Map, new int[2] { point[0], point[1] - 2 }, new int[2] { point[0], point[1] - 1 }))
                                 {
                                     Map[point[0]][point[1] - 2] = 1;
-                                    maxL -= 1;
                                     VorH = "V";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                    Ship[2] = new int[2] { point[0], point[1] - 2 };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, new int[2] { point[0], point[1] - 1 }))
                                 {
                                     Map[point[0]][point[1] + 1] = 1;
-                                    maxL -= 1;
                                     VorH = "V";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                    Ship[2] = new int[2] { point[0], point[1] + 1 };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else
                                 {
@@ -127,16 +159,22 @@ namespace SeaBattleGame.Utils
                                 if (ValidatePoint(Map, new int[2] { point[0] + 2, point[1] }, new int[2] { point[0] + 1, point[1] }))
                                 {
                                     Map[point[0] + 2][point[1]] = 1;
-                                    maxL -= 1;
                                     VorH = "H";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                    Ship[2] = new int[2] { point[0] + 2, point[1] };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, new int[2] { point[0] + 1, point[1] }))
                                 {
                                     Map[point[0] - 1][point[1]] = 1;
-                                    maxL -= 1;
                                     VorH = "H";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                    Ship[2] = new int[2] { point[0] - 1, point[1] };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else
                                 {
@@ -151,16 +189,22 @@ namespace SeaBattleGame.Utils
                                 if (ValidatePoint(Map, new int[2] { point[0], point[1] + 2 }, new int[2] { point[0], point[1] + 1 }))
                                 {
                                     Map[point[0]][point[1] + 2] = 1;
-                                    maxL -= 1;
                                     VorH = "V";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                    Ship[2] = new int[2] { point[0], point[1] + 2 };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, new int[2] { point[0], point[1] + 1 }))
                                 {
                                     Map[point[0]][point[1] - 1] = 1;
-                                    maxL -= 1;
                                     VorH = "V";
-                                    continue;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                    Ship[2] = new int[2] { point[0], point[1] - 1 };
+                                    Ship[3] = new int[1] { 3 };
+                                    break;
                                 }
                                 else
                                 {
@@ -188,16 +232,24 @@ namespace SeaBattleGame.Utils
                                     if (Map[point[0] - 3][point[1]] == 0)
                                     {
                                         Map[point[0] - 3][point[1]] = 1;
-                                        maxL -= 1;
                                         VorH = "H";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] - 2, point[1] };
+                                        Ship[3] = new int[2] { point[0] - 3, point[1] };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else if (Map[point[0] + 1][point[1]] == 0)
                                     {
                                         Map[point[0] + 1][point[1]] = 1;
-                                        maxL -= 1;
                                         VorH = "H";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] - 2, point[1] };
+                                        Ship[3] = new int[2] { point[0] + 1, point[1] };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else
                                     {
@@ -218,16 +270,24 @@ namespace SeaBattleGame.Utils
                                     if (Map[point[0]][point[1] - 3] == 0)
                                     {
                                         Map[point[0]][point[1] - 3] = 1;
-                                        maxL -= 1;
                                         VorH = "V";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] - 2 };
+                                        Ship[3] = new int[2] { point[0], point[1] - 3 };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else if (Map[point[0]][point[1] + 1] == 0)
                                     {
                                         Map[point[0]][point[1] + 1] = 1;
-                                        maxL -= 1;
                                         VorH = "V";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] - 2 };
+                                        Ship[3] = new int[2] { point[0], point[1] + 1 };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else
                                     {
@@ -248,16 +308,24 @@ namespace SeaBattleGame.Utils
                                     if (Map[point[0] + 3][point[1]] == 0)
                                     {
                                         Map[point[0] + 3][point[1]] = 1;
-                                        maxL -= 1;
                                         VorH = "H";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] + 2, point[1] };
+                                        Ship[3] = new int[2] { point[0] + 3, point[1] };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else if (Map[point[0] - 1][point[1]] == 0)
                                     {
                                         Map[point[0] - 1][point[1]] = 1;
-                                        maxL -= 1;
                                         VorH = "H";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] + 2, point[1] };
+                                        Ship[3] = new int[2] { point[0] - 1, point[1] };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else
                                     {
@@ -278,16 +346,24 @@ namespace SeaBattleGame.Utils
                                     if (Map[point[0]][point[1] + 3] == 0)
                                     {
                                         Map[point[0]][point[1] + 3] = 1;
-                                        maxL -= 1;
                                         VorH = "V";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] + 2 };
+                                        Ship[3] = new int[2] { point[0], point[1] + 3 };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else if (Map[point[0]][point[1] - 1] == 0)
                                     {
                                         Map[point[0]][point[1] - 1] = 1;
-                                        maxL -= 1;
                                         VorH = "V";
-                                        continue;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] + 2 };
+                                        Ship[3] = new int[2] { point[0], point[1] - 1 };
+                                        Ship[4] = new int[1] { 4 };
+                                        break;
                                     }
                                     else
                                     {
@@ -305,8 +381,18 @@ namespace SeaBattleGame.Utils
                             }
                         }
                     }
+                    Boats[ShipIndex] = Ship;
+                    ShipIndex += 1;
                 }
                 MaxLengthBoat -= 1;
+            }
+            if (UserId == 0)
+            {
+                Boats1 = Boats;
+            }
+            else
+            {
+                Boats2 = Boats;
             }
             return Map;
         }
@@ -383,7 +469,7 @@ namespace SeaBattleGame.Utils
             }
         }
 
-        private int[][] GetEmptyMap()
+        public int[][] GetEmptyMap()
         {
             int[][] Map = new int[12][];
             for (int i = 0; i < 12; i++)
@@ -423,5 +509,70 @@ namespace SeaBattleGame.Utils
             return Points;
         }
 
+        public Status CheckBoats(int[] point, int UserId)
+        {
+            int[][][] Boats;
+            Status result = new Status(false);
+            bool Flag = false;
+            if (UserId == 0)
+            {
+                Boats = Boats1;
+            }
+            else
+            {
+                Boats = Boats2;
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < Boats[i].Length - 1; j++)
+                {
+                    if ((Boats[i][j][0] == (point[0] + 1)) &&
+                        (Boats[i][j][1] == (point[1] + 1)))
+                    {
+                        Boats[i][Boats[i].Length - 1][0] -= 1;
+                        if (Boats[i][Boats[i].Length - 1][0] == 0)
+                        {
+                            result.IsKilled = true;
+                            result.Ship = Boats[i];
+                            Flag = true;
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                if (Flag == true)
+                {
+                    break;
+                }
+            }
+            if (UserId == 0)
+            {
+                Boats1 = Boats;
+            }
+            else
+            {
+                Boats2 = Boats;
+            }
+            return result;
+        }
+
     }
+
+    class Status
+    {
+        public bool IsKilled;
+        public int[][] Ship;
+        public Status(bool status)
+        {
+            this.IsKilled = status;
+        }
+    }
+
 }

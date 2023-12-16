@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SeaBattleGame"
         mc:Ignorable="d"
         Title="Sea Battle" Height="650" Width="1000">
-    <Grid>
+    <Grid> 
         <Grid x:Name="StartPanel"
               Visibility="Collapsed"
               Height="300">
@@ -84,6 +84,10 @@
                     </Button.Resources>
                 </Button>   
             </StackPanel>
+        </Grid>
+        <Grid x:Name="HandMadeCreationPanel"
+              Visibility="Collapsed">
+            
         </Grid>
         <Grid x:Name="InformationPanel"
               Width="805" Height="100"
