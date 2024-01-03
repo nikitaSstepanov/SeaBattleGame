@@ -289,6 +289,7 @@ namespace SeaBattleGame
             else if (button.Name.ToString() == "Handmade")
             {
                 Map1 = MapManager.GetEmptyMap();
+
                 HandMadeCreationPanel.Visibility = Visibility.Visible;
             }
         }

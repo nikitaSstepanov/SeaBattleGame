@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace SeaBattleGame.Utils
 {
@@ -8,215 +9,231 @@ namespace SeaBattleGame.Utils
         private int[][][] Boats1 = new int[10][][];
         private int[][][] Boats2 = new int[10][][];
         private Random randomizer = new Random();
-
+                                                    
         public int[][] GenerateMap(int UserId)
         {
             int[][] Map = GetEmptyMap();
             int MaxLengthBoat = 4;
-            int[][] PointsClone = GetPoints();
-            string VorH = "V";
+            int[][] Points = GetPoints();
+            string[] VH = new string[2] { "V", "H" };
+            int VHIndex = randomizer.Next(0, 1);
+            string VorH = VH[VHIndex];
             int[][][] Boats = new int[10][][];
             int ShipIndex = 0;
             for (int i = 1; i <= 4; i++)
             {
                 for (int j = 0; j < i; j++)
                 {
-                    int maxL = MaxLengthBoat;
                     int[][] Ship = new int[MaxLengthBoat + 1][];
                     while (true)
                     {
-                        if (maxL == 0)
+                        int[] point;
+                        if (Points.Length != 0)
                         {
-                            break;
-                        }
-                        int PointIndex = randomizer.Next(0, PointsClone.Length);
-                        int[] point = PointsClone[PointIndex];
-                        if (ValidatePoint(Map, point, point))
-                        {
-                            Map[point[0]][point[1]] = 1;
-                            maxL -= 1;
+                            int PointIndex = randomizer.Next(0, Points.Length);
+                            point = Points[PointIndex];
                         }
                         else
                         {
+                            break;
+                        }
+                        if (!ValidatePoint(Map, point, point))
+                        {
+                            //Points = Points.Where(x => CheckArr(point, x)).ToArray();      
                             continue;
                         }
+                        Map[point[0]][point[1]] = 1;
                         if (MaxLengthBoat == 1)
                         {
+                            Map[point[0]][point[1]] = 1;
                             Ship[0] = point;
                             Ship[1] = new int[1] { 1 };
+                            break;
                         }
                         else if (MaxLengthBoat == 2)
                         {
-                            if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, point) && VorH == "V")
+                            if (VorH == "V")
                             {
-                                Map[point[0] - 1][point[1]] = 1;
-                                VorH = "H";
-                                Ship[0] = point;
-                                Ship[1] = new int[2] { point[0] - 1, point[1] };
-                                Ship[2] = new int[1] { 2 };
-                                break;
-                            }
-                            else if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, point) && VorH == "H")
-                            {
-                                Map[point[0]][point[1] - 1] = 1;
-                                VorH = "V";
-                                Ship[0] = point;
-                                Ship[1] = new int[2] { point[0], point[1] - 1 };
-                                Ship[2] = new int[1] { 2 };
-                                break;
-                            }
-                            else if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, point) && VorH == "V")
-                            {
-                                Map[point[0] + 1][point[1]] = 1;
-                                VorH = "H";
-                                Ship[0] = point;
-                                Ship[1] = new int[2] { point[0] + 1, point[1] };
-                                Ship[2] = new int[1] { 2 };
-                                break;
-                            }
-                            else if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, point) && VorH == "H")
-                            {
-                                Map[point[0]][point[1] + 1] = 1;
-                                VorH = "V";
-                                Ship[0] = point;
-                                Ship[1] = new int[2] { point[0], point[1] + 1 };
-                                Ship[2] = new int[1] { 2 };
-                                break;
+                                if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, point))
+                                {
+                                    Map[point[0] - 1][point[1]] = 1;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                    Ship[2] = new int[1] { 2 };
+                                    VorH = "H";
+                                    break;
+                                }
+                                else if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, point))
+                                {
+                                    Map[point[0] + 1][point[1]] = 1;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                    Ship[2] = new int[1] { 2 };
+                                    VorH = "H";
+                                    break;
+                                }
+                                else
+                                {
+                                    Map[point[0]][point[1]] = 0;
+                                    continue;
+                                }
                             }
                             else
                             {
-                                Map[point[0]][point[1]] = 0;
-                                maxL = MaxLengthBoat;
-                                continue;
+                                if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, point) && VorH == "H")
+                                {
+                                    Map[point[0]][point[1] - 1] = 1;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                    Ship[2] = new int[1] { 2 };
+                                    VorH = "V";
+                                    break;
+                                }
+                                else if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, point) && VorH == "H")
+                                {
+                                    Map[point[0]][point[1] + 1] = 1;
+                                    Ship[0] = point;
+                                    Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                    Ship[2] = new int[1] { 2 };
+                                    VorH = "V";
+                                    break;
+                                }
+                                else
+                                {
+                                    Map[point[0]][point[1]] = 0;
+                                    continue;
+                                }
                             }
                         }
                         else if (MaxLengthBoat == 3)
                         {
-                            if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, point) && VorH == "V")
+                            if (VorH == "V")
                             {
-                                Map[point[0] - 1][point[1]] = 1;
-                                maxL -= 1;
-                                if (ValidatePoint(Map, new int[2] { point[0] - 2, point[1] }, new int[2] { point[0] - 1, point[1] }))
-                                {
-                                    Map[point[0] - 2][point[1]] = 1;
-                                    VorH = "H";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0] - 1, point[1] };
-                                    Ship[2] = new int[2] { point[0] - 2, point[1] };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
-                                }
-                                else if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, new int[2] { point[0] - 1, point[1] }))
-                                {
-                                    Map[point[0] + 1][point[1]] = 1;
-                                    VorH = "H";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0] - 1, point[1] };
-                                    Ship[2] = new int[2] { point[0] + 1, point[1] };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
-                                }
-                                else
-                                {
-                                    Map[point[0] - 1][point[1]] = 0;
-                                    maxL += 1;
-                                }
-                            }
-                            if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, point) && VorH == "H")
-                            {
-                                Map[point[0]][point[1] - 1] = 1;
-                                maxL -= 1;
-                                if (ValidatePoint(Map, new int[2] { point[0], point[1] - 2 }, new int[2] { point[0], point[1] - 1 }))
-                                {
-                                    Map[point[0]][point[1] - 2] = 1;
-                                    VorH = "V";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0], point[1] - 1 };
-                                    Ship[2] = new int[2] { point[0], point[1] - 2 };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
-                                }
-                                else if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, new int[2] { point[0], point[1] - 1 }))
-                                {
-                                    Map[point[0]][point[1] + 1] = 1;
-                                    VorH = "V";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0], point[1] - 1 };
-                                    Ship[2] = new int[2] { point[0], point[1] + 1 };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
-                                }
-                                else
-                                {
-                                    Map[point[0]][point[1] - 1] = 0;
-                                    maxL += 1;
-                                }
-                            }
-                            if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, point) && VorH == "V")
-                            {
-                                Map[point[0] + 1][point[1]] = 1;
-                                maxL -= 1;
-                                if (ValidatePoint(Map, new int[2] { point[0] + 2, point[1] }, new int[2] { point[0] + 1, point[1] }))
-                                {
-                                    Map[point[0] + 2][point[1]] = 1;
-                                    VorH = "H";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0] + 1, point[1] };
-                                    Ship[2] = new int[2] { point[0] + 2, point[1] };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
-                                }
-                                else if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, new int[2] { point[0] + 1, point[1] }))
+                                if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, point))
                                 {
                                     Map[point[0] - 1][point[1]] = 1;
-                                    VorH = "H";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0] + 1, point[1] };
-                                    Ship[2] = new int[2] { point[0] - 1, point[1] };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
+                                    if (ValidatePoint(Map, new int[2] { point[0] - 2, point[1] }, new int[2] { point[0] - 1, point[1] }))
+                                    {
+                                        Map[point[0] - 2][point[1]] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] - 2, point[1] };
+                                        Ship[3] = new int[1] { 3 }; 
+                                        VorH = "H";
+                                        break;
+                                    }
+                                    else if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, new int[2] { point[0] - 1, point[1] }))
+                                    {
+                                        Map[point[0] + 1][point[1]] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] - 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] + 1, point[1] };
+                                        Ship[3] = new int[1] { 3 };
+                                        VorH = "H";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Map[point[0] - 1][point[1]] = 0;
+                                    }
+                                }
+                                else if (ValidatePoint(Map, new int[2] { point[0] + 1, point[1] }, point))
+                                {
+                                    Map[point[0] + 1][point[1]] = 1;
+                                    if (ValidatePoint(Map, new int[2] { point[0] + 2, point[1] }, new int[2] { point[0] + 1, point[1] }))
+                                    {
+                                        Map[point[0] + 2][point[1]] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] + 2, point[1] };
+                                        Ship[3] = new int[1] { 3 };
+                                        VorH = "H";
+                                        break;
+                                    }
+                                    else if (ValidatePoint(Map, new int[2] { point[0] - 1, point[1] }, new int[2] { point[0] + 1, point[1] }))
+                                    {
+                                        Map[point[0] - 1][point[1]] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0] + 1, point[1] };
+                                        Ship[2] = new int[2] { point[0] - 1, point[1] };
+                                        Ship[3] = new int[1] { 3 };
+                                        VorH = "H";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Map[point[0] + 1][point[1]] = 0;
+                                    }
                                 }
                                 else
                                 {
-                                    Map[point[0] + 1][point[1]] = 0;
-                                    maxL += 1;
-                                }
-                            }
-                            if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, point) && VorH == "H")
-                            {
-                                Map[point[0]][point[1] + 1] = 1;
-                                maxL -= 1;
-                                if (ValidatePoint(Map, new int[2] { point[0], point[1] + 2 }, new int[2] { point[0], point[1] + 1 }))
-                                {
-                                    Map[point[0]][point[1] + 2] = 1;
-                                    VorH = "V";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0], point[1] + 1 };
-                                    Ship[2] = new int[2] { point[0], point[1] + 2 };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
-                                }
-                                else if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, new int[2] { point[0], point[1] + 1 }))
-                                {
-                                    Map[point[0]][point[1] - 1] = 1;
-                                    VorH = "V";
-                                    Ship[0] = point;
-                                    Ship[1] = new int[2] { point[0], point[1] + 1 };
-                                    Ship[2] = new int[2] { point[0], point[1] - 1 };
-                                    Ship[3] = new int[1] { 3 };
-                                    break;
-                                }
-                                else
-                                {
-                                    Map[point[0]][point[1] + 1] = 0;
-                                    maxL += 1;
+                                    Map[point[0]][point[1]] = 0;
+                                    continue;
                                 }
                             }
                             else
                             {
-                                Map[point[0]][point[1]] = 0;
-                                maxL = MaxLengthBoat;
-                                continue;
+                                if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, point))
+                                {
+                                    Map[point[0]][point[1] - 1] = 1;
+                                    if (ValidatePoint(Map, new int[2] { point[0], point[1] - 2 }, new int[2] { point[0], point[1] - 1 }))
+                                    {
+                                        Map[point[0]][point[1] - 2] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] - 2 };
+                                        Ship[3] = new int[1] { 3 };
+                                        VorH = "V";
+                                        break;
+                                    }
+                                    else if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, new int[2] { point[0], point[1] - 1 }))
+                                    {
+                                        Map[point[0]][point[1] + 1] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] - 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] + 1 };
+                                        Ship[3] = new int[1] { 3 };
+                                        VorH = "V";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Map[point[0]][point[1] - 1] = 0;
+                                    }
+                                }
+                                else if (ValidatePoint(Map, new int[2] { point[0], point[1] + 1 }, point))
+                                {
+                                    Map[point[0]][point[1] + 1] = 1;
+                                    if (ValidatePoint(Map, new int[2] { point[0], point[1] + 2 }, new int[2] { point[0], point[1] + 1 }))
+                                    {
+                                        Map[point[0]][point[1] + 2] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] + 2 };
+                                        Ship[3] = new int[1] { 3 };
+                                        VorH = "V";
+                                        break;
+                                    }
+                                    else if (ValidatePoint(Map, new int[2] { point[0], point[1] - 1 }, new int[2] { point[0], point[1] + 1 }))
+                                    {
+                                        Map[point[0]][point[1] - 1] = 1;
+                                        Ship[0] = point;
+                                        Ship[1] = new int[2] { point[0], point[1] + 1 };
+                                        Ship[2] = new int[2] { point[0], point[1] - 1 };
+                                        Ship[3] = new int[1] { 3 };
+                                        VorH = "V";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Map[point[0]][point[1] + 1] = 0;
+                                    }
+                                }
+                                else
+                                {
+                                    Map[point[0]][point[1]] = 0;
+                                    continue;
+                                }
                             }
                         }
                         else if (MaxLengthBoat == 4)
@@ -224,102 +241,95 @@ namespace SeaBattleGame.Utils
                             if (Map[point[0] - 1][point[1]] == 0 && VorH == "V")
                             {
                                 Map[point[0] - 1][point[1]] = 1;
-                                maxL -= 1;
                                 if (Map[point[0] - 2][point[1]] == 0)
                                 {
                                     Map[point[0] - 2][point[1]] = 1;
-                                    maxL -= 1;
                                     if (Map[point[0] - 3][point[1]] == 0)
                                     {
                                         Map[point[0] - 3][point[1]] = 1;
-                                        VorH = "H";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0] - 1, point[1] };
                                         Ship[2] = new int[2] { point[0] - 2, point[1] };
                                         Ship[3] = new int[2] { point[0] - 3, point[1] };
                                         Ship[4] = new int[1] { 4 };
+                                        VorH = "H";
                                         break;
                                     }
                                     else if (Map[point[0] + 1][point[1]] == 0)
                                     {
                                         Map[point[0] + 1][point[1]] = 1;
-                                        VorH = "H";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0] - 1, point[1] };
                                         Ship[2] = new int[2] { point[0] - 2, point[1] };
                                         Ship[3] = new int[2] { point[0] + 1, point[1] };
                                         Ship[4] = new int[1] { 4 };
+                                        VorH = "H";
                                         break;
                                     }
                                     else
                                     {
                                         Map[point[0] - 1][point[1]] = 0;
                                         Map[point[0] - 2][point[1]] = 0;
-                                        maxL += 2;
+                                        continue;
                                     }
                                 }
                             }
                             if (Map[point[0]][point[1] - 1] == 0 && VorH == "H")
                             {
                                 Map[point[0]][point[1] - 1] = 1;
-                                maxL -= 1;
                                 if (Map[point[0]][point[1] - 2] == 0)
                                 {
                                     Map[point[0]][point[1] - 2] = 1;
-                                    maxL -= 1;
                                     if (Map[point[0]][point[1] - 3] == 0)
                                     {
                                         Map[point[0]][point[1] - 3] = 1;
-                                        VorH = "V";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0], point[1] - 1 };
                                         Ship[2] = new int[2] { point[0], point[1] - 2 };
                                         Ship[3] = new int[2] { point[0], point[1] - 3 };
                                         Ship[4] = new int[1] { 4 };
+                                        VorH = "V";
                                         break;
                                     }
                                     else if (Map[point[0]][point[1] + 1] == 0)
                                     {
                                         Map[point[0]][point[1] + 1] = 1;
-                                        VorH = "V";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0], point[1] - 1 };
                                         Ship[2] = new int[2] { point[0], point[1] - 2 };
                                         Ship[3] = new int[2] { point[0], point[1] + 1 };
                                         Ship[4] = new int[1] { 4 };
+                                        VorH = "V";
                                         break;
                                     }
                                     else
                                     {
                                         Map[point[0]][point[1] - 1] = 0;
                                         Map[point[0]][point[1] - 2] = 0;
-                                        maxL += 2;
+                                        continue;
                                     }
                                 }
                             }
                             if (Map[point[0] + 1][point[1]] == 0 && VorH == "V")
                             {
                                 Map[point[0] + 1][point[1]] = 1;
-                                maxL -= 1;
                                 if (Map[point[0] + 2][point[1]] == 0)
                                 {
                                     Map[point[0] + 2][point[1]] = 1;
-                                    maxL -= 1;
                                     if (Map[point[0] + 3][point[1]] == 0)
                                     {
                                         Map[point[0] + 3][point[1]] = 1;
-                                        VorH = "H";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0] + 1, point[1] };
                                         Ship[2] = new int[2] { point[0] + 2, point[1] };
                                         Ship[3] = new int[2] { point[0] + 3, point[1] };
                                         Ship[4] = new int[1] { 4 };
+                                        VorH = "H";
                                         break;
                                     }
                                     else if (Map[point[0] - 1][point[1]] == 0)
                                     {
                                         Map[point[0] - 1][point[1]] = 1;
-                                        VorH = "H";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0] + 1, point[1] };
                                         Ship[2] = new int[2] { point[0] + 2, point[1] };
@@ -331,52 +341,49 @@ namespace SeaBattleGame.Utils
                                     {
                                         Map[point[0] + 1][point[1]] = 0;
                                         Map[point[0] + 2][point[1]] = 0;
-                                        maxL += 2;
+                                        continue;
                                     }
                                 }
                             }
                             if (Map[point[0]][point[1] + 1] == 0 && VorH == "H")
                             {
                                 Map[point[0]][point[1] + 1] = 1;
-                                maxL -= 1;
                                 if (Map[point[0]][point[1] + 2] == 0)
                                 {
                                     Map[point[0]][point[1] + 2] = 1;
-                                    maxL -= 1;
                                     if (Map[point[0]][point[1] + 3] == 0)
                                     {
                                         Map[point[0]][point[1] + 3] = 1;
-                                        VorH = "V";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0], point[1] + 1 };
                                         Ship[2] = new int[2] { point[0], point[1] + 2 };
                                         Ship[3] = new int[2] { point[0], point[1] + 3 };
                                         Ship[4] = new int[1] { 4 };
+                                        VorH = "V";
                                         break;
                                     }
                                     else if (Map[point[0]][point[1] - 1] == 0)
                                     {
                                         Map[point[0]][point[1] - 1] = 1;
-                                        VorH = "V";
                                         Ship[0] = point;
                                         Ship[1] = new int[2] { point[0], point[1] + 1 };
                                         Ship[2] = new int[2] { point[0], point[1] + 2 };
                                         Ship[3] = new int[2] { point[0], point[1] - 1 };
                                         Ship[4] = new int[1] { 4 };
+                                        VorH = "V";
                                         break;
                                     }
                                     else
                                     {
                                         Map[point[0]][point[1] + 1] = 0;
                                         Map[point[0]][point[1] + 2] = 0;
-                                        maxL += 2;
+                                        continue;
                                     }
                                 }
                             }
                             else
                             {
                                 Map[point[0]][point[1]] = 0;
-                                maxL = MaxLengthBoat;
                                 continue;
                             }
                         }
@@ -395,6 +402,18 @@ namespace SeaBattleGame.Utils
                 Boats2 = Boats;
             }
             return Map;
+        }
+
+        private bool CheckArr(int[] Arr, int[] ToCheck)
+        {
+            if ((Arr[0] == ToCheck[0]) && (Arr[1] == ToCheck[1]))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         private bool ValidatePoint(int[][] Map, int[] point, int[] exception)
